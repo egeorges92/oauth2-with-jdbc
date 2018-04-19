@@ -51,7 +51,7 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
          * Allow our tokens to be delivered from our token access point as well as for tokens
          * to be validated from this point
          */
-        security.checkTokenAccess("permitAll()");
+        security.checkTokenAccess("permitAll()").allowFormAuthenticationForClients();
     }
     
     @Override
