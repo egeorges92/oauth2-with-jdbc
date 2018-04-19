@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -19,7 +19,6 @@ import com.dazito.oauthexample.config.AppConfig;
 /**
  * Created by daz on 27/06/2017.
  */
-@SuppressWarnings("deprecation")// because of use of org.springframework.security.crypto.password.NoOpPasswordEncoder
 @EnableAuthorizationServer
 @Configuration
 public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter {
@@ -32,7 +31,7 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
     
 	@Bean
 	public static PasswordEncoder passwordEncoder() {
-		return NoOpPasswordEncoder.getInstance();
+		return new BCryptPasswordEncoder();
 	}
     
     @Autowired
