@@ -1,6 +1,7 @@
 package com.dazito.oauthexample.oauth;
 
-import com.dazito.oauthexample.config.AppConfig;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +10,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+
+import com.dazito.oauthexample.config.AppConfig;
 
 /**
  * Created by daz on 27/06/2017.
@@ -21,6 +24,9 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
     private final AppConfig appConfig;
     
     @Autowired
+    private DataSource dataSource;
+    
+    @Autowired
     public AuthServerOAuth2Config(AuthenticationManager authenticationManager, AppConfig appConfig) {
         this.authenticationManager = authenticationManager;
         this.appConfig = appConfig;
@@ -28,7 +34,7 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
     
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.jdbc(appConfig.dataSource());
+        clients.jdbc(dataSource);
     }
     
     @Override
