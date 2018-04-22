@@ -77,18 +77,16 @@
 						<goals>
 							<goal>build</goal>
 							<goal>push</goal>
+							<goal>tag</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
 					<repository>${project.groupId}/${project.artifactId}</repository>
+					<tag>${project.version}</tag>
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
-					<imageTags>
-						<imageTag>${project.version}</imageTag>
-						<imageTag>latest</imageTag>
-					</imageTags>
 				</configuration>
 			</plugin>
 		</plugins>
