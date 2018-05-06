@@ -26,3 +26,9 @@ mvnw.cmd
 .idea/
 .mvn/
 target/
+
+# Eclpise STS
+.classpath
+.project
+.settings/
+
