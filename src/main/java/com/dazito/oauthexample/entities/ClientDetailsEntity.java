@@ -18,8 +18,11 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.ToString;
+
 @Entity
 @Table(name = "oauth_client_details")
+@ToString
 public class ClientDetailsEntity implements ClientDetails {
 
 	/**

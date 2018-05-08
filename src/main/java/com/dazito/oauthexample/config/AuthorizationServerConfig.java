@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -18,9 +19,15 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.ClientRegistrationException;
+import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+
+import com.dazito.oauthexample.repository.ClientDetailsRepository;
+import com.dazito.oauthexample.repository.UserDetailsRepository;
 
 /**
  * Created by daz on 27/06/2017.
@@ -35,10 +42,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
-	private UserDetailsService userDetailsService;
-
+	private ClientDetailsRepository clientDetailsRepository;
+	
 	@Autowired
-	private ClientDetailsService clientDetailsService;
+	private UserDetailsRepository userDetailsRepository;
 
 	@Autowired
 	private TokenStore tokenStore;
@@ -47,15 +54,35 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	public static PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
-	@Autowired
-    private DataSource dataSource;
 	
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		//clients.withClientDetails(clientDetailsService);
-		clients.jdbc(dataSource);
+		clients.withClientDetails(clientDetailsService());
 	}
+	
+	@Bean
+	public ClientDetailsService clientDetailsService() {
+        return new ClientDetailsService() {
+            @Override
+            public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
+            	return clientDetailsRepository
+        				.findById(clientId)
+        				.orElseThrow(() -> new NoSuchClientException("Could not find " + clientId));
+            }
+        };
+    }
+	
+	@Bean
+	public  UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
+        	@Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return userDetailsRepository
+                        .findById(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("Could not find " + username));
+            }
+        };
+    }
 
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -66,7 +93,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		 
 		// @formatter:off
 		security
-			.checkTokenAccess("permitAll()")
+			.tokenKeyAccess("permitAll()")
+			.checkTokenAccess("isAuthenticated()")
 			.allowFormAuthenticationForClients();
 		// @formatter:on
 	}
@@ -77,7 +105,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		endpoints
 			.authenticationManager(authenticationManager)
 			.tokenStore(tokenStore)
-			.userDetailsService(userDetailsService);
+			.userDetailsService(userDetailsService());
 		// @formatter:on
 	}
 
