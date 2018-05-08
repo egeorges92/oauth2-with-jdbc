@@ -10,7 +10,7 @@ import java.security.Principal;
  * Created by daz on 29/06/2017.
  */
 @RestController
-@RequestMapping(path = "/account")
+@RequestMapping(path = "/me")
 public class PrincipalResource {
 
     @RequestMapping(method = RequestMethod.POST)

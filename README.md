@@ -1,5 +1,123 @@
 ### CURL
+basic auth :
+'''sh
 curl -s -u "web:secret" -X POST -d "grant_type=password&username=dazito&password=dazito.com" http://localhost:8181/oauth/token
+'''
+form auth :
+'''sh
+curl -s -X POST -d "client_id=web&client_secret=secret&grant_type=password&username=dazito&password=dazito.com" http://localhost:8181/rest/oauth/token
+'''
+result :
+'''json
+{
+	"access_token":"dbbe45c8-22f5-4996-a7af-232c7c2f2b9b",
+	"token_type":"bearer",
+	"refresh_token":"76aa9640-5824-412f-9340-a8eba39069a3",
+	"expires_in":899,
+	"scope":"read write"
+}
+'''
+
+
+
+get principal :
+'''ssh
+curl -s -X POST --header "Authorization: Bearer dbbe45c8-22f5-4996-a7af-232c7c2f2b9b" http://localhost:8181/me
+'''
+'''json
+{  
+   "authorities":[  
+      {  
+         "authority":"ROLE_USER"
+      }
+   ],
+   "details":{  
+      "remoteAddress":"0:0:0:0:0:0:0:1",
+      "sessionId":null,
+      "tokenValue":"dbbe45c8-22f5-4996-a7af-232c7c2f2b9b",
+      "tokenType":"Bearer",
+      "decodedDetails":null
+   },
+   "authenticated":true,
+   "userAuthentication":{  
+      "authorities":[  
+         {  
+            "authority":"ROLE_USER"
+         }
+      ],
+      "details":{  
+         "grant_type":"password",
+         "username":"dazito"
+      },
+      "authenticated":true,
+      "principal":{  
+         "username":"dazito",
+         "password":"$2a$10$FOqrjeX9h7VGscD2oqMtXeHM4p8UPuVUcD3GuMadJgnDMq0SOJDDC",
+         "authorities":[  
+            {  
+               "authority":"ROLE_USER"
+            }
+         ],
+         "accountExpiredOn":null,
+         "credentialsExpiredOn":null,
+         "locked":false,
+         "enabled":true,
+         "accountNonExpired":true,
+         "accountNonLocked":true,
+         "credentialsNonExpired":true
+      },
+      "credentials":null,
+      "name":"dazito"
+   },
+   "principal":{  
+      "username":"dazito",
+      "password":"$2a$10$FOqrjeX9h7VGscD2oqMtXeHM4p8UPuVUcD3GuMadJgnDMq0SOJDDC",
+      "authorities":[  
+         {  
+            "authority":"ROLE_USER"
+         }
+      ],
+      "accountExpiredOn":null,
+      "credentialsExpiredOn":null,
+      "locked":false,
+      "enabled":true,
+      "accountNonExpired":true,
+      "accountNonLocked":true,
+      "credentialsNonExpired":true
+   },
+   "oauth2Request":{  
+      "clientId":"web",
+      "scope":[  
+         "read",
+         "write"
+      ],
+      "requestParameters":{  
+         "grant_type":"password",
+         "username":"dazito"
+      },
+      "resourceIds":[  
+
+      ],
+      "authorities":[  
+
+      ],
+      "approved":true,
+      "refresh":false,
+      "redirectUri":null,
+      "responseTypes":[  
+
+      ],
+      "extensions":{  
+
+      },
+      "grantType":"password",
+      "refreshTokenRequest":null
+   },
+   "credentials":"",
+   "clientOnly":false,
+   "name":"dazito"
+}
+'''
 
 ### SSL
 @see https://github.com/creactiviti/spring-boot-starter-acme
